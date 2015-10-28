@@ -1,17 +1,25 @@
 <?php
 
+    require 'config.php';
+
+    $data = array(
+      "response"=>"OK",
+      "server_name"=>$servername
+    );
+
+    $conn = new mysqli($dbserver, $dbuser, $dbpass, $dbname);
+
+
     if(!(isset($_GET["scenes"]) && isset($_GET["values"]))){
         die("uhh you didn't tell me anything to change");
     }
 
     $scenesFromURL = explode(',',$_GET["scenes"]);
     $valuesFromURL = explode(',',$_GET["values"]);
-    $data = array();
-    $data = array_pad($data, 24, "d");
+    $senddata = array();
+    $senddata = array_pad($senddata, 24, "d");
     $cmd = "./senddata.py";
 
-    // GET ME THAT HOT DATA
-    $conn = new mysqli('localhost', 'root', '', 'lightsdb');
 
     if($conn->connect_errno > 0){
       die('Unable to connect to database [' . $conn->connect_error . ']');
@@ -47,14 +55,14 @@
                     die("uhh undefined value");
                 }
                 $lightValue = $valuesFromURL[$i]*$chan*0.01;
-                $data[$n] = $lightValue;
+                $senddata[$n] = $lightValue;
             }
 
         }
     }
 
-    foreach($data as $i){
-        if($data == NULL){
+    foreach($senddata as $i){
+        if($senddata == NULL){
           $cmd = $cmd." d";
         }else{
           $cmd = $cmd." ".$i;
@@ -67,16 +75,17 @@
         }
     }
 
-    //$output=exec($cmd);
-    exec("bash -c 'exec nohup setsid $cmd > /dev/null 2>&1 &'");
+    exec("$cmd 2>&1", $output);
 
+    //exec("bash -c 'exec nohup setsid $cmd > /dev/null 2>&1 &'");
     echo $cmd;
+    print_r($output);
 
-/*    $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
+    $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
     $date = date('m/d/Y h:i:s a', time());
     $txt = $date." ".$cmd."\n";
     fwrite($myfile, $txt);
     fclose($myfile);
-    echo $date;*/
+    echo $date;
     //echo $output;
 ?>

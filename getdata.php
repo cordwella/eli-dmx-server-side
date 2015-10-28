@@ -1,19 +1,22 @@
 
 <?php
-  $data = array(
+    require 'config.php';
+
+    $data = array(
       "response"=>"OK",
-      "server_name"=>"WEGC",
-  );
-  $scenes = array();
-  $channels = array();
+      "server_name"=>$servername
+    );
 
-  $conn = new mysqli('localhost', 'root', '', 'lightsdb');
+    $conn = new mysqli($dbserver, $dbuser, $dbpass, $dbname);
 
-  if($conn->connect_errno > 0){
-    die('Unable to connect to database [' . $conn->connect_error . ']');
-  }
+    $scenes = array();
+    $channels = array();
 
-  if(!isset($_GET["scene"])){
+    if($conn->connect_errno > 0){
+        die('Unable to connect to database [' . $conn->connect_error . ']');
+    }
+
+    if(!isset($_GET["scene"])){
       // No user helping here so no prepared statements
       $sql='SELECT s.id, s.name, c.category FROM `scenes` AS s INNER JOIN `categories` AS c on s.category_id = c.id_cat';
 
@@ -26,8 +29,7 @@
 
       $data["scenes"] = $scenes;
 
-
-  }else{
+   }else{
       $scene = array();
       // Reminder you started the IDs from 1, loser
       $test  = $_GET["scene"];
@@ -61,7 +63,7 @@
   if(!$result = $conn->query($sql)){
     die('There was an error running the query [' . $conn->error . ']');
   }
-  
+
   while($row = $result->fetch_assoc()){
     array_push($categories, array("id"=>$row["id_cat"],"name"=>$row["category"]));
   }

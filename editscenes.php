@@ -4,12 +4,14 @@
     // optional parameters: id (for changing an already created scene)
     // category ID (or category (give options for both))
 
+    require 'config.php';
+
     $data = array(
-        "response"=>"OK",
-        "server_name"=>"WEGC",
+      "response"=>"OK",
+      "server_name"=>$servername
     );
 
-    $conn = new mysqli('localhost', 'root', '', 'lightsdb');
+    $conn = new mysqli($dbserver, $dbuser, $dbpass, $dbname);
 
     if($conn->connect_errno > 0){
         die('Unable to connect to database [' . $conn->connect_error . ']');

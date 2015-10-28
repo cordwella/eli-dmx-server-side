@@ -1,9 +1,21 @@
 #!/usr/bin/python
+#-------------------------------------------------------------------------------
+# Name:        displaygui
+# Purpose:     displays a simple gui which shows what each of the lights would be at at the current point
+#
+# Author:      Amelia Cordwell
+#
+# Created:     20/10/2015
+# Copyright:   (c) Amelia Cordwell 2015
+# Licence:     Creative Commons
+#-------------------------------------------------------------------------------
+
 import pickle
 import time
 from Tkinter import *
 
 root = Tk()
+root.wm_title("ELiDMX Lighting Display")
 
 pickapickle = pickle.load(open( "test.p", "rb" ))
 values = pickapickle[0]
@@ -21,16 +33,20 @@ d = 0
 def setText():
     global values
 
-    #on color convert int to hex then use in string
-    pickapickle = pickle.load(open( "test.p", "rb" ))
-    prevvalues = values
-    values = pickapickle[0]
-    r = 1
-    for i in range(len(lights)):
-        # ONLY UPDATE ON CHANGE
-        if values[i] != prevvalues[i]:
-            Label(bg='#ffff00', text=str(int(values[i] + 0.5)), relief=SUNKEN,width=30).grid(row=r,column=1)
-        r = r + 1
+    try:
+        #on color convert int to hex then use in string
+        pickapickle = pickle.load(open( "test.p", "rb" ))
+        prevvalues = values
+        values = pickapickle[0]
+        r = 1
+        for i in range(len(lights)):
+            # ONLY UPDATE ON CHANGE
+            if values[i] != prevvalues[i]:
+                Label(bg='#ffff00', text=str(int(values[i] + 0.5)), relief=SUNKEN,width=30).grid(row=r,column=1)
+            r = r + 1
+    except:
+        print("Error in reading from pickle")
+    
     root.after(100, setText)
 
 Label(text="ELiDMX Lighting Display", relief=FLAT,width=30,font=("Purisa", 14)).grid(row=0,column=0,columnspan=2)

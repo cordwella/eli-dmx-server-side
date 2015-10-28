@@ -1,4 +1,18 @@
 #!/usr/bin/python
+#-------------------------------------------------------------------------------
+# Name:        senddata.py
+# Purpose:     Sends DMX data according to its arguments
+#
+# Author:      Amelia Cordwell
+#
+# Created:     20/10/2015
+# Copyright:   (c) Amelia Cordwell 2015
+# Licence:     Creative Commons
+#-------------------------------------------------------------------------------
+
+#BASK IN THE GLORIOUSNESS OF MY VERY MESSY CODE
+#(actually though im kinda sorry)
+
 import sys
 from ola.ClientWrapper import ClientWrapper
 import array
@@ -33,14 +47,25 @@ def SendDMXFrame():
     # we do this first in case the frame computation takes a long time.
     wrapper.AddEvent(TICK_INTERVAL, SendDMXFrame)
 
-    newOld = pickle.load(open( "test.p", "rb" ))
-    codes = newOld[1]
+    try:
+        newOld = pickle.load(open( "test.p", "rb" ))
+        codes = newOld[1]
+        values = newOld[0]
+    except:
+        codes = []
+        values = []
+        toPickle = [values,codes]
+        pickle.dump(toPickle, open( "test.p", "wb" ))
+
+
+
     for i in range(CHANNELS-len(codes)):
         codes.append(0)
-    values = newOld[0]
 
     for i in range(CHANNELS-len(values)):
         values.append(0)
+
+    print(values)
 
     if(not loopCount >= tickGoal):
         # print("add some more bro")
@@ -50,14 +75,18 @@ def SendDMXFrame():
 
         if(loopCount != 0):
             toChange = []
-            for i in range((len(codes)-1)):
+            for i in range((len(codes))):
                 try:
                     if codes[i] == currentCode:
                         if int(values[i]+0.5) != int(goal[i]):
                             toChange.append(i)
+                        else:
+                            values[i] = goal[i]
                 except IndexError:
                     if int(values[i]+0.5) != int(goal[i]):
                         toChange.append(i)
+                    else:
+                        values[i] = goal[i]
 
         else:
             for i in toChange:
@@ -76,7 +105,6 @@ def SendDMXFrame():
 
     for i in range(0,len(values)):
         data.append(int(values[i] + 0.5))
-
 
     #print(toChange)
     print(values)
@@ -98,12 +126,14 @@ try:
 except:
     prevvalues = []
     prevcodes = []
+    toPickle = [prevvalues,prevcodes]
+    pickle.dump(toPickle, open( "test.p", "wb" ))
 
 i = 1
 while i < len(sys.argv):
     arg = sys.argv[i]
     if(arg == "-f"):
-        i = i+1
+        i = i + 1
         fadetime = int(sys.argv[i])
     else:
         try:
@@ -119,7 +149,9 @@ while i < len(sys.argv):
                 goal.append(int(math.floor(prevvalues[0][i])))
             except:
                 goal.append(0);
+
     i=i+1
+print(goal)
 
 tickGoal = int(fadetime/TICK_INTERVAL)
 
@@ -133,7 +165,6 @@ for i in range(len(goal)):
         diff = goal[i]-prevvalues[i]
     except:
         diff = goal[i]
-
     #print(diff/tickGoal)
     change.append(float(diff/tickGoal))
 #print(change)
