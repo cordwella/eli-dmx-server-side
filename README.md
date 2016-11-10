@@ -1,6 +1,8 @@
 # ELi-DMX Server Side Code
 The server side code for use to control theatre lights with the ELi-DMX app.
 
+This has been superseeded by the new version ["ELi-DMX"](http://www.github.com/cordwella/eli-dmx), which runs as a web app instead, I would recomend using that one.
+
 This is a web API which uses the Open Lighting Architecture [OLA](https://www.openlighting.org/ola/) to send DMX messages and control theatre lights. It was designed for use with [this](https://github.com/cordwella/eli-dmx-android) android application.
 
 Can be seen in use [here](https://www.youtube.com/watch?v=VUXlRPttL04) (I used this as my entry for the 2015 Brightsparks competition as seen [here](http://www.brightsparks.org.nz/elidmx-software/) ).
